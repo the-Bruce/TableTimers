@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% load qr %}
+
+{% block main %}
+  <div class="container">
+    <div class="row">
+      <div class="col-1 col-md-2 col-lg-3"></div>
+      <div class="card col">
+        <div class="card-header d-flex flex-row align-items-center justify-content-between">
+          <h1>Invite Session Admin</h1>
+        </div>
+        <div class="card-body">
+          <a href="{% url "timers:join_control" %}?code={{ access_token }}">
+            {% qrl "timers:join_control" code=access_token %}
+          </a>
+        </div>
+      </div>
+      <div class="col-1 col-md-2 col-lg-3"></div>
+    </div>
+  </div>
+{% endblock %}

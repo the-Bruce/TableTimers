@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+{% load timer %}
+{% load qr %}
+
+{% block main %}
+  <div class="card h-100 flex-grow-1">
+    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+      <h1 class="m-0 align-middle">
+        {{ session.title }}
+      </h1>
+      <h2 class="d-flex flex-row align-items-center justify-content-between m-0 align-middle">
+        <span class="mx-3">Round {{ session.round }}</span>
+        <button class="btn btn-outline-dark" id="tableButton" data-bs-toggle="modal" data-bs-target="#tableModal"><i
+         class="fas fa-cog"></i></button>
+      </h2>
+    </div>
+    <div class="card-body d-flex flex-column align-items-center">
+      {% include "timers/snippet/timer.html" with session=session table=session.timer large=1 %}
+      <div class="timer-row d-flex flex-row gap-3 flex-wrap justify-content-center" id="tableTimers">
+{#        <div class="card qrcode"><h2 class="card-header">Open Personal</h2><div class="card-img-bottom d-flex flex-column align-items-center">{% qrl "timers:view_table_table" session.short_code %}</div></div>#}
+      
+        {% for table in session.tableoffset_set.all %}
+          {% if table.table|stringformat:"i" in selected_tables %}
+            <div class="card">
+              <h2 class="card-header">Table {{ table.table }}</h2>
+              <div class="card-body">
+                {% include "timers/snippet/timer.html" with session=session table=table %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <h3 class="card-footer mb-0">
+      Session ID: <span class="font-monospace">{{ session.short_code }}</span>
+    </h3>
+  </div>
+  
+  <template id="timerTemplate">
+  <div class="card">
+    <h2 class="card-header"></h2>
+    <div class="card-body">
+      {% include "timers/snippet/timer.html" with session=session table=session.timer %}
+    </div>
+  </div>
+  </template>
+
+  <div class="modal" tabindex="-1" id="tableModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filter Visible Tables</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="tableForm" method="get" action="">
+            <label for="selectedTables">Select tables to display</label>
+            <select id="selectedTables" name="selectedTables" class="form-select" multiple size="10">
+              {% for table in session.available_tables %}
+                <option value="{{ table }}" {% if table|stringformat:"i" in selected_tables %}selected{% endif %}>
+                  Table {{ table }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" form="tableForm">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block css %}
+  <style>
+      .timer-halo-front {
+          fill: none;
+          stroke-width: 12;
+          stroke-dasharray: 1;
+          stroke-linecap: round;
+          transition: stroke-dashoffset linear 0.2s;
+      }
+      .timer-large > svg {
+          position: absolute;
+      }
+      
+      .timer-large {
+          position: relative;
+          width: 100%;
+      }
+      .timer-row {
+          flex: 0 4;
+          width: 100%;
+      }
+      .timer-row > .card {
+          flex-basis: 20vh;
+          flex-shrink: 1;
+      }
+      .timer-row > .qrcode {
+          flex-basis: 15vh;
+      }
+      
+      
+      .timer {}
+      
+      .timer-large {
+          flex: 3 1;
+      }
+      
+      .segno {
+          max-height: 100%;
+      }
+
+      .timer-halo-back {
+          fill: none;
+          stroke: #bbbbbb;
+          stroke-width: 12;
+          stroke-linecap: round;
+      }
+
+      .timer-halo {
+          width: 100%;
+          height: 100%;
+      }
+  </style>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static "timers/runtimers.js" %}"></script>
+  <script>
+      window.addEventListener("load",
+          (_event) => {
+              updateTimers()
+              setInterval(quickUpdateTimers, 100)
+              setInterval(async () => await fetchTimerUpdates("{{ session.short_code }}"), 1000)
+          }
+      )
+  </script>
+  <script>
+  const tableModal = document.getElementById('tableModal')
+  const tableInput = document.getElementById('selectedTables')
+  
+  if (tableModal) {
+      tableModal.addEventListener('shown.bs.modal', () => {
+          tableInput.focus()
+      })
+  }
+  </script>
+{% endblock %}

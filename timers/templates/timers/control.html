@@ -1,0 +1,87 @@
+{% extends "timers/timerview.html" %}
+{% load static %}
+{% load timer %}
+
+{% block main %}
+  <div class="card h-100">
+    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+      <h1 class="m-0 align-middle">
+        {{ session.title }}
+      </h1>
+      <h2 class="d-flex flex-row align-items-center justify-content-between m-0 align-middle">
+        <span class="mx-3">Round {{ session.round }}</span>
+        <a href="{% url "timers:edit_session" slug=session.short_code %}" class="btn btn-outline-dark" id="tableButton"><i
+         class="fas fa-edit"></i></a>
+      </h2>
+    </div>
+    <div class="card-body row justify-content-around">
+      <div class="col-md d-flex flex-column align-items-center">
+        <h3>Timer</h3>
+        {% include "timers/snippet/timer.html" with session=session table=session.timer %}
+        <div class="mb-2">
+          <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+            <button type="button" class="btn btn-primary" onclick="play('{{ session.short_code }}')">
+              <i class="fas fa-play"></i>
+            </button>
+            <button type="button" class="btn btn-primary" onclick="pause('{{ session.short_code }}')">
+              <i class="fas fa-pause"></i>
+            </button>
+            <button type="button" class="btn btn-primary" onclick="reset('{{ session.short_code }}')">
+              <i class="fas fa-undo"></i>
+            </button>
+            <a class="btn btn-primary" href="{% url "timers:edit_time" session.short_code %}">
+              <i class="fas fa-edit"></i>
+            </a>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <a href="{% url "timers:invite_control" session.short_code %}" class="btn btn-primary">
+            Invite Admin
+          </a>
+        </div>
+      </div>
+      <div class="col-md d-flex flex-column align-items-center mt-3 mt-md-0">
+        {% for table in session.tableoffset_set.all %}
+          <form class="d-none" id="delete-extension-{{ table.id }}"
+                action="{% url "timers:delete_table" session.short_code table.id %}"
+                method="post">{% csrf_token %}</form>
+        {% endfor %}
+        <form class="d-none" id="delete-all-extensions"
+                action="{% url "timers:delete_all_tables" session.short_code %}"
+                method="post">{% csrf_token %}</form>
+        <h3>Extensions</h3>
+        <div class="list-group w-100">
+          {% for table in session.tableoffset_set.all %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong>Table {{ table.table }}</strong> - {{ table.offset|short_duration }}
+            </span>
+              <span>
+              <a class="btn btn-outline-dark" href="{% url "timers:update_table" session.short_code table.id %}">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button form="delete-extension-{{ table.id }}" type="submit" class="btn btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </span>
+            </div>
+          {% endfor %}
+          <a href="{% url "timers:create_table" session.short_code %}" class="list-group-item list-group-item-action list-group-item-success"><strong>Add new</strong></a>
+          <button form="delete-all-extensions" type="submit" class="list-group-item list-group-item-action list-group-item-danger"><strong>Remove all</strong></button>
+          </div>
+      </div>
+    </div>
+    <h3 class="card-footer mb-0">
+      Session ID: <span class="font-monospace">{{ session.short_code }}</span>
+    </h3>
+  </div>
+{% endblock %}
+
+{% block js %}
+  {% csrf_token %}
+  <script>
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  </script>
+  <script src="{% static "timers/control.js" %}"></script>
+  {{ block.super }}
+{% endblock %}

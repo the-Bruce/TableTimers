@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" class="min-vh-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lag Time</title>
+    <script src="https://use.fontawesome.com/releases/v5.13.1/js/all.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    {% block css %}
+    {% endblock %}
+  </head>
+  <body class="min-vh-100">
+
+  {% block base %}
+    <div class="d-flex flex-column min-vh-100">
+      {% include "segments/nav.html" %}
+      <div class="container-flex d-flex flex-column flex-grow-1 my-5 mx-5">
+        {% if messages %}
+          <ul class="messages list-unstyled">
+            {% for message in messages %}
+              <li class="alert alert-dismissible fade show{% if message.tags %}
+                {{ message.tags }}{% else %} alert-light{% endif %}">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% block main %}
+          <h1>Lag Time</h1>
+        {% endblock %}
+      </div>
+    </div>
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    {% block js %}
+    {% endblock %}
+  </body>
+</html>

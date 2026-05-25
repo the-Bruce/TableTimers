@@ -1,0 +1,16 @@
+{% load timer %}
+<div class="timer {% if large %}timer-large {% endif %}d-flex"
+     data-table="{% if table != session.timer %}{{ table.table }}{% endif %}"
+     data-start-time="{{ session.timer.start_time.isoformat }}"
+     data-remaining="{{ table.remaining_duration.total_seconds }}"
+     data-duration="{{ session.timer.duration.total_seconds }}"
+     data-running="{{ session.timer.running }}">
+  <svg class="timer-halo" height="160" width="200" viewBox="0 0 200 160">
+    <path class="timer-halo-back" d="M 100 100 m 70, 40 a 80,80 0 1,0 -140,0" pathLength="1"></path>
+    <path class="timer-halo-front" d="M 100 100 m 70, 40 a 80,80 0 1,0 -140,0" pathLength="1"
+          style="stroke-dashoffset: {{ table.fraction_complete|invert }}; stroke:
+           {% if session.timer.running %}{{ table.fraction_complete|progcol }}{% else %}black{% endif %}"></path>
+    <text class="timer-text" x="50%" y="100" dominant-baseline="middle" text-anchor="middle"
+          font-size="32px">{{ table.display }}</text>
+  </svg>
+</div>
