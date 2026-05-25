@@ -84,4 +84,7 @@
   </script>
   <script src="{% static "timers/control.js" %}"></script>
   {{ block.super }}
+  <script>
+    document.tabletimers.control = true;
+  </script>
 {% endblock %}

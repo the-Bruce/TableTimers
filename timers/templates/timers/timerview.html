@@ -6,11 +6,11 @@
 {% block main %}
   <div class="card h-100 flex-grow-1">
     <div class="card-header d-flex flex-row align-items-center justify-content-between">
-      <h1 class="m-0 align-middle">
+      <h1 class="m-0 align-middle" id="session-title">
         {{ session.title }}
       </h1>
       <h2 class="d-flex flex-row align-items-center justify-content-between m-0 align-middle">
-        <span class="mx-3">Round {{ session.round }}</span>
+        <span class="mx-3">Round <span id="session-round">{{ session.round }}</span></span>
         <button class="btn btn-outline-dark" id="tableButton" data-bs-toggle="modal" data-bs-target="#tableModal"><i
          class="fas fa-cog"></i></button>
       </h2>
@@ -128,6 +128,9 @@
 {% endblock %}
 
 {% block js %}
+  <script>
+  document.tabletimers = {control: false};
+  </script>
   <script src="{% static "timers/runtimers.js" %}"></script>
   <script>
       window.addEventListener("load",

@@ -89,13 +89,13 @@ function cloneTimer(timer_id) {
         insertedTimer = box.insertBefore(timer.firstElementChild, null);
     }
     let header = insertedTimer.getElementsByClassName("card-header")[0];
-    header.innerText = "Table "+timer_id;
+    header.innerText = "Table " + timer_id;
     let timerInner = insertedTimer.getElementsByClassName("timer")[0];
     timerInner.attributes.getNamedItem("data-table").value = timer_id;
     return timerInner;
 }
 
-async function fetchTimerUpdates(short_code) {
+async function fetchTimerUpdates(short_code, control = false) {
     let url = new URL(document.URL);
     let params = new URLSearchParams(url.search);
     let enabled_tables = params.getAll("selectedTables");
@@ -105,6 +105,12 @@ async function fetchTimerUpdates(short_code) {
         return
     }
     let timer_json = JSON.parse(await timer_data.text());
+
+    let title = document.getElementById("session-title");
+    title.textContent = timer_json["title"]
+    let round = document.getElementById("session-round");
+    round.textContent = timer_json["round"]
+
     let timers = document.getElementsByClassName("timer");
     let existing = []
     let forceUpdate = false;
@@ -114,7 +120,7 @@ async function fetchTimerUpdates(short_code) {
         console.log("update", timer_id)
         if (timer_id === "") {
             timer.attributes.getNamedItem("data-remaining").value = timer_json["remaining_duration"];
-        } else {
+        } else if (!document.tabletimers.control) {
             if (timer_id in timer_json["tables"] && (enabled_tables.length === 0 || enabled_tables.includes(timer_id))) {
                 timer.attributes.getNamedItem("data-remaining").value = timer_json["tables"][timer_id]["remaining_duration"];
                 existing.push(timer_id);
@@ -127,20 +133,22 @@ async function fetchTimerUpdates(short_code) {
         timer.attributes.getNamedItem("data-duration").value = timer_json["duration"];
         timer.attributes.getNamedItem("data-start-time").value = timer_json["start_time"];
     }
-    for (let del of pendingDeletions) {
-        del.remove();
-    }
-    console.dir(timer_json);
-    console.dir(existing);
-    for (let timer_id in timer_json["tables"]) {
-        if (!(existing.includes(timer_id)) && (enabled_tables.length === 0 || enabled_tables.includes(timer_id))) {
-            console.log("!existing", timer_id)
-            let timer = cloneTimer(timer_id);
-            timer.attributes.getNamedItem("data-remaining").value = timer_json["tables"][timer_id]["remaining_duration"];
-            timer.attributes.getNamedItem("data-running").value = timer_json["running"];
-            timer.attributes.getNamedItem("data-duration").value = timer_json["duration"];
-            timer.attributes.getNamedItem("data-start-time").value = timer_json["start_time"];
-            forceUpdate = true;
+    if (!document.tabletimers.control) {
+        for (let del of pendingDeletions) {
+            del.remove();
+        }
+        console.dir(timer_json);
+        console.dir(existing);
+        for (let timer_id in timer_json["tables"]) {
+            if (!(existing.includes(timer_id)) && (enabled_tables.length === 0 || enabled_tables.includes(timer_id))) {
+                console.log("!existing", timer_id)
+                let timer = cloneTimer(timer_id);
+                timer.attributes.getNamedItem("data-remaining").value = timer_json["tables"][timer_id]["remaining_duration"];
+                timer.attributes.getNamedItem("data-running").value = timer_json["running"];
+                timer.attributes.getNamedItem("data-duration").value = timer_json["duration"];
+                timer.attributes.getNamedItem("data-start-time").value = timer_json["start_time"];
+                forceUpdate = true;
+            }
         }
     }
     if (!timer_json["running"] || forceUpdate) {

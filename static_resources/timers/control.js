@@ -16,6 +16,7 @@ async function pause(short_code) {
     });
     await response.text()
 
+    await fetchTimerUpdates(short_code);
     updateTimers();
 }
 
@@ -25,7 +26,7 @@ async function play(short_code) {
         mode: 'same-origin'
     });
     await response.text()
-
+    await fetchTimerUpdates(short_code);
     updateTimers();
 }
 
@@ -34,6 +35,7 @@ async function reset(short_code) {
         method: "POST", headers: {'X-CSRFToken': csrftoken},
         mode: 'same-origin'
     });
-    await response.text()
+    await response.text();
+    await fetchTimerUpdates(short_code);
     updateTimers();
 }

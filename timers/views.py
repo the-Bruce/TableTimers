@@ -299,6 +299,8 @@ class SessionStateJson(View):
                     session.timer.remaining_duration.total_seconds()
                 ),
                 "tables": tables,
+                "title": session.title,
+                "round": session.round,
             }
         )
 
