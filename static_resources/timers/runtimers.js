@@ -107,9 +107,13 @@ async function fetchTimerUpdates(short_code, control = false) {
     let timer_json = JSON.parse(await timer_data.text());
 
     let title = document.getElementById("session-title");
-    title.textContent = timer_json["title"]
+    if (title) {
+        title.textContent = timer_json["title"]
+    }
     let round = document.getElementById("session-round");
-    round.textContent = timer_json["round"]
+    if (round) {
+        round.textContent = timer_json["round"]
+    }
 
     let timers = document.getElementsByClassName("timer");
     let existing = []
