@@ -6,5 +6,6 @@ dependencies = [
     "crispy-bootstrap5>=2026.3",
     "django>=6.0.4",
     "django-crispy-forms>=2.6",
+    "psycopg2-binary>=2.9.12",
     "segno>=1.6.6",
 ]
