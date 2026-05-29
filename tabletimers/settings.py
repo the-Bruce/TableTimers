@@ -138,3 +138,8 @@ MESSAGE_TAGS = {
     message_constants.WARNING: "alert-warning",
     message_constants.ERROR: "alert-danger",
 }
+
+try:
+    from .local_config import *
+except ImportError:
+    pass
