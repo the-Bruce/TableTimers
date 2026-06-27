@@ -5,11 +5,11 @@
 {% block main %}
   <div class="card h-100">
     <div class="card-header d-flex flex-row align-items-center justify-content-between">
-      <h1 class="m-0 align-middle">
+      <h1 class="m-0 align-middle" id="session-title">
         {{ session.title }}
       </h1>
       <h2 class="d-flex flex-row align-items-center justify-content-between m-0 align-middle">
-        <span class="mx-3">Round {{ session.round }}</span>
+        <span class="mx-3">Round <span id="session-round">{{ session.round }}</span></span>
         <a href="{% url "timers:edit_session" slug=session.short_code %}" class="btn btn-outline-dark" id="tableButton"><i
          class="fas fa-edit"></i></a>
       </h2>
@@ -73,7 +73,7 @@
           </button>
         </div>
         <a class="btn btn-primary" href="{% url "timers:table_ranges" session.short_code %}">Available Tables</a>
-        
+
       </div>
     </div>
     <h3 class="card-footer mb-0">
@@ -91,5 +91,6 @@
   {{ block.super }}
   <script>
       document.tabletimers.control = true;
+      document.tabletimers.expected_extensions = {{ session.tableoffset_set.count }};
   </script>
 {% endblock %}

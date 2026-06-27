@@ -119,9 +119,13 @@ async function fetchTimerUpdates(short_code, control = false) {
     let existing = []
     let forceUpdate = false;
     let pendingDeletions = [];
+    if (document.tabletimers.control) {
+        if (Object.keys(timer_json["tables"]).length !== document.tabletimers.expected_extensions) {
+            document.location.reload();
+        }
+    }
     for (let timer of timers) {
         let timer_id = timer.attributes.getNamedItem("data-table").value;
-        console.log("update", timer_id)
         if (timer_id === "") {
             timer.attributes.getNamedItem("data-remaining").value = timer_json["remaining_duration"];
         } else if (!document.tabletimers.control) {
@@ -141,11 +145,8 @@ async function fetchTimerUpdates(short_code, control = false) {
         for (let del of pendingDeletions) {
             del.remove();
         }
-        console.dir(timer_json);
-        console.dir(existing);
         for (let timer_id in timer_json["tables"]) {
             if (!(existing.includes(timer_id)) && (enabled_tables.length === 0 || enabled_tables.includes(timer_id))) {
-                console.log("!existing", timer_id)
                 let timer = cloneTimer(timer_id);
                 timer.attributes.getNamedItem("data-remaining").value = timer_json["tables"][timer_id]["remaining_duration"];
                 timer.attributes.getNamedItem("data-running").value = timer_json["running"];
