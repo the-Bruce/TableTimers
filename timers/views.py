@@ -15,14 +15,18 @@ from django.views.generic import (
     TemplateView,
     FormView,
     RedirectView,
-    DeleteView,
+    DeleteView, ListView,
 )
 from django.utils.translation import gettext as _
-from django.views.generic.base import ContextMixin
-from django.views.generic.edit import ProcessFormView
 
-from timers.forms import ShortCodeForm, TableOffestForm, ConfirmForm, TimeDurationWidget
-from timers.models import Session, Timer, TableOffset
+from timers.forms import (
+    ShortCodeForm,
+    TableOffestForm,
+    ConfirmForm,
+    TimeDurationWidget,
+    TableRangeForm,
+)
+from timers.models import Session, Timer, TableOffset, TableRanges
 
 
 class SessionValidation(UserPassesTestMixin, AccessMixin):
@@ -125,6 +129,9 @@ class UpdateTableView(SessionValidation, UpdateView):
         self.session = kwargs["session"] = self.get_session()
         return kwargs
 
+    def get_queryset(self):
+        return self.get_session().tableoffset_set.all()
+
     def get_success_url(self):
         return reverse("timers:control_session", args=[self.session.short_code])
 
@@ -137,8 +144,11 @@ class DeleteTableView(SessionValidation, DeleteView):
         self.session = self.get_session()
         return super().post(request, *args, **kwargs)
 
-    def get_session(self):
+    def get_session(self) -> Session:
         return get_object_or_404(Session.objects.filter(short_code=self.kwargs["slug"]))
+
+    def get_queryset(self):
+        return self.get_session().tableoffset_set.all()
 
     def get_success_url(self):
         return reverse("timers:control_session", args=[self.session.short_code])
@@ -215,6 +225,7 @@ class CreateSessionView(CreateView):
             start_time=timezone.now(),
             session=self.object,
         )
+        TableRanges.objects.create(start=1, end=10, session=self.object)
         existing_authorizations = self.request.session.get("valid_sessions", [])
         assert isinstance(self.object, Session)
         existing_authorizations.append(self.object.short_code)
@@ -260,7 +271,7 @@ class UpdateSessionTimeView(SessionValidation, UpdateView):
 
         return obj
 
-    def get_form(self, form_class = None):
+    def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields["duration"].widget = TimeDurationWidget()
         return form
@@ -279,6 +290,71 @@ class ControlView(SessionValidation, DetailView):
     template_name = "timers/control.html"
     slug_field = "short_code"
     api = False
+
+
+class TableRangesView(SessionValidation, DetailView):
+    model = Session
+    template_name = "timers/table_ranges.html"
+    slug_field = "short_code"
+
+
+class CreateTableRangeView(SessionValidation, CreateView):
+    model = TableRanges
+    template_name = "timers/create_table_range.html"
+    form_class = TableRangeForm
+
+    def get_session(self):
+        return get_object_or_404(Session.objects.filter(short_code=self.kwargs["slug"]))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        self.session = kwargs["session"] = self.get_session()
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.session = self.session
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("timers:table_ranges", args=[self.session.short_code])
+
+
+class UpdateTableRangeView(SessionValidation, UpdateView):
+    model = TableRanges
+    template_name = "timers/update_table_range.html"
+    form_class = TableRangeForm
+
+    def get_session(self) -> Session:
+        return get_object_or_404(Session.objects.filter(short_code=self.kwargs["slug"]))
+
+    def get_queryset(self):
+        return self.get_session().tableranges_set.all()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        self.session = kwargs["session"] = self.get_session()
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("timers:table_ranges", args=[self.session.short_code])
+
+
+class DeleteTableRangeView(SessionValidation, DeleteView):
+    model = TableRanges
+    template_name = "timers/create_table_range.html"
+
+    def post(self, request, *args, **kwargs):
+        self.session = self.get_session()
+        return super().post(request, *args, **kwargs)
+
+    def get_session(self):
+        return get_object_or_404(Session.objects.filter(short_code=self.kwargs["slug"]))
+
+    def get_queryset(self):
+        return self.get_session().tableranges_set.all()
+
+    def get_success_url(self):
+        return reverse("timers:table_ranges", args=[self.session.short_code])
 
 
 class SessionStateJson(View):

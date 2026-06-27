@@ -47,10 +47,10 @@
                 method="post">{% csrf_token %}</form>
         {% endfor %}
         <form class="d-none" id="delete-all-extensions"
-                action="{% url "timers:delete_all_tables" session.short_code %}"
-                method="post">{% csrf_token %}</form>
+              action="{% url "timers:delete_all_tables" session.short_code %}"
+              method="post">{% csrf_token %}</form>
         <h3>Extensions</h3>
-        <div class="list-group w-100">
+        <div class="list-group w-100 mb-2">
           {% for table in session.tableoffset_set.all %}
             <div class="list-group-item d-flex justify-content-between align-items-center">
             <span>
@@ -66,9 +66,14 @@
             </span>
             </div>
           {% endfor %}
-          <a href="{% url "timers:create_table" session.short_code %}" class="list-group-item list-group-item-action list-group-item-success"><strong>Add new</strong></a>
-          <button form="delete-all-extensions" type="submit" class="list-group-item list-group-item-action list-group-item-danger"><strong>Remove all</strong></button>
-          </div>
+          <a href="{% url "timers:create_table" session.short_code %}"
+             class="list-group-item list-group-item-action list-group-item-success"><strong>Add new</strong></a>
+          <button form="delete-all-extensions" type="submit"
+                  class="list-group-item list-group-item-action list-group-item-danger"><strong>Remove all</strong>
+          </button>
+        </div>
+        <a class="btn btn-primary" href="{% url "timers:table_ranges" session.short_code %}">Available Tables</a>
+        
       </div>
     </div>
     <h3 class="card-footer mb-0">
@@ -85,6 +90,6 @@
   <script src="{% static "timers/control.js" %}"></script>
   {{ block.super }}
   <script>
-    document.tabletimers.control = true;
+      document.tabletimers.control = true;
   </script>
 {% endblock %}

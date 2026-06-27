@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block main %}
+  <div class="card h-100">
+    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+      <h1>Tables</h1>
+    </div>
+    <div class="card-body">
+      {% for table in session.tableranges_set.all %}
+        <form class="d-none" id="delete-tables-{{ table.id }}"
+              action="{% url "timers:delete_table_range" session.short_code table.id %}"
+              method="post">{% csrf_token %}</form>
+      {% endfor %}
+      <div class="list-group w-100 mb-2">
+        {% for table in session.tableranges_set.all %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              Tables: {{ table.start }} - {{ table.end }}
+            </span>
+            <span>
+              <a class="btn btn-outline-dark" href="{% url "timers:update_table_range" session.short_code table.id %}">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button form="delete-tables-{{ table.id }}" type="submit" class="btn btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </span>
+          </div>
+        {% endfor %}
+        <a href="{% url "timers:create_table_range" session.short_code %}"
+           class="list-group-item list-group-item-action list-group-item-success">
+          <strong>Add new</strong>
+        </a>
+      </div>
+      <a class="btn btn-primary" href="{% url "timers:control_session" session.short_code %}">Back</a>
+    </div>
+  </div>
+{% endblock %}

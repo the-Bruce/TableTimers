@@ -94,6 +94,9 @@ class TableRanges(models.Model):
     start = models.IntegerField()
     end = models.IntegerField()
 
+    class Meta:
+        ordering = ["start"]
+
 
 class TableOffset(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)

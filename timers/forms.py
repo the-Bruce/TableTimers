@@ -5,9 +5,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.widgets import Select, MultiWidget, Input
 from django.utils.dateparse import parse_duration
-from django.utils.translation import ngettext_lazy
 
-from timers.models import Session, TableOffset
+from timers.models import Session, TableOffset, TableRanges
 
 
 def get_time_factors(td: timedelta):
@@ -139,6 +138,37 @@ class TableOffestForm(forms.ModelForm):
                     "Table extension with that table number already exists"
                 )
         return table
+
+
+class TableRangeForm(forms.ModelForm):
+    class Meta:
+        model = TableRanges
+        fields = ["start", "end"]
+
+    def __init__(self, *args, session, **kwargs):
+        self.session: Session = session
+        super().__init__(*args, **kwargs)
+
+    def clean_end(self):
+        start = self.cleaned_data["start"]
+        end = self.cleaned_data["end"]
+
+        if end <= start:
+            raise ValidationError("End must be bigger than start")
+        return end
+
+    def clean(self):
+        validated_values = super().clean()
+
+        start = validated_values["start"]
+        end = validated_values["end"]
+
+        table_ranges_qs = self.session.tableranges_set.all()
+        if self.instance is not None:
+            table_ranges_qs = table_ranges_qs.exclude(id=self.instance.id)
+        for table_range in table_ranges_qs:
+            if (start <= table_range.start <= end) or (start <= table_range.end <= end) or (table_range.start <= start <= end <= table_range.end) or (start <= table_range.start <= table_range.end <= end):
+                raise ValidationError(f"Tables overlap with existing range ({table_range.start} - {table_range.end})")
 
 
 class ConfirmForm(forms.Form):
