@@ -31,6 +31,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("create/", CreateSessionView.as_view(), name="new_session"),
     path("edit/<slug:slug>/", UpdateSessionView.as_view(), name="edit_session"),
+    path("control/", MySessionsView.as_view(), name="my_sessions"),
     path("control/<slug:slug>/", ControlView.as_view(), name="control_session"),
     path(
         "control/<slug:slug>/tables/", TableRangesView.as_view(), name="table_ranges"

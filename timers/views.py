@@ -211,6 +211,14 @@ class SelectPersonalSessionView(FormView):
     def get_success_url(self):
         return reverse("timers:view_table_table", args=[self.object.short_code])
 
+class MySessionsView(ListView):
+    model = Session
+    template_name = "timers/my_sessions.html"
+
+    def get_queryset(self):
+        valid = self.request.session.get("valid_sessions", [])
+        return Session.objects.filter(short_code__in=valid)
+
 
 class CreateSessionView(CreateView):
     model = Session

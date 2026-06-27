@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block main %}
+  <div class="card h-100">
+    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+      <h1>My Sessions</h1>
+    </div>
+    <div class="card-body">
+      <div class="list-group w-100">
+        {% for session in object_list %}
+          <a href="{% url "timers:control_session" session.short_code %}"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            {{ session.title }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
