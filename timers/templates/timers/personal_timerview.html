@@ -1,0 +1,71 @@
+{% extends "timers/timerview.html" %}
+{% load static %}
+{% load timer %}
+
+{% block main %}
+  <div class="card h-100 flex-grow-1">
+    <div class="card-header d-flex flex-row align-items-center justify-content-between">
+      <h1 class="m-0 align-middle" id="session-title">
+        {{ session.title }}
+      </h1>
+      <h2 class="d-flex flex-row align-items-center justify-content-between m-0 align-middle">
+        <span class="mx-3">Round <span id="session-round">{{ session.round }}</span></span>
+        <button class="btn btn-outline-dark" id="tableButton" data-bs-toggle="modal" data-bs-target="#tableModal"><i
+         class="fas fa-cog"></i></button>
+      </h2>
+    </div>
+    <div class="card-body d-flex flex-column align-items-center">
+      {% include "timers/snippet/timer.html" with session=session table=session.timer large=1 %}
+    </div>
+    <h3 class="card-footer mb-0 d-flex flex-row align-items-center justify-content-between">
+      <span>Session ID: <span class="font-monospace">{{ session.short_code }}</span></span>
+      <span>Table: {{ selected_table }}</span>
+    </h3>
+  </div>
+  
+  <div class="modal" tabindex="-1" id="tableModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change Table</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="tableForm" method="post" action="{% url "timers:view_table_table" session.short_code %}">
+            {% csrf_token %}
+            <label for="id_table">Select table to display</label>
+            <select id="id_table" name="table" class="form-select" size="10">
+              {% for table in session.available_tables %}
+                <option value="{{ table }}" {% if table|stringformat:"i" == selected_table|stringformat:"i" %}selected{% endif %}>
+                  Table {{ table }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" form="tableForm">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block js %}
+  {{ block.super }}
+  <script>
+  document.tabletimers.personal = true;
+  </script>
+  <script src="{% static "timers/runtimers.js" %}"></script>
+  <script>
+  const tableModal = document.getElementById('tableModal')
+  const tableInput = document.getElementById('selectedTable')
+  
+  if (tableModal) {
+      tableModal.addEventListener('shown.bs.modal', () => {
+          tableInput.focus()
+      })
+  }
+  </script>
+{% endblock %}

@@ -114,6 +114,15 @@ class ShortCodeForm(forms.Form):
             raise ValidationError("Unknown or invalid short code")
         return short_code
 
+class TableForm(forms.Form):
+    table = forms.IntegerField(widget=Select(choices=[]))
+
+    def __init__(self, *args, session, **kwargs):
+        self.session = session
+        super().__init__(*args, **kwargs)
+        self.fields["table"].widget = Select(
+            choices=[(str(i), i) for i in self.session.available_tables]
+        )
 
 class TableOffestForm(forms.ModelForm):
     class Meta:
@@ -131,7 +140,6 @@ class TableOffestForm(forms.ModelForm):
     def clean_table(self):
         table = self.cleaned_data["table"]
         orig_table = self["table"].initial
-        print(table, orig_table)
         if table != orig_table:
             if TableOffset.objects.filter(session=self.session, table=table).exists():
                 raise ValidationError(

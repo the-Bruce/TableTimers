@@ -25,6 +25,7 @@ from timers.forms import (
     ConfirmForm,
     TimeDurationWidget,
     TableRangeForm,
+    TableForm,
 )
 from timers.models import Session, Timer, TableOffset, TableRanges
 
@@ -210,6 +211,38 @@ class SelectPersonalSessionView(FormView):
 
     def get_success_url(self):
         return reverse("timers:view_table_table", args=[self.object.short_code])
+
+
+class SelectPersonalSessionTableView(FormView):
+    template_name = "timers/select_table.html"
+    form_class = TableForm
+
+    def get_session(self):
+        return get_object_or_404(Session.objects.filter(short_code=self.kwargs["slug"]))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        self.session = kwargs["session"] = self.get_session()
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = self.get_session()
+        self.table_selected = form.cleaned_data['table']
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("timers:view_table", args=[self.object.short_code, self.table_selected])
+
+class PersonalView(DetailView):
+    model = Session
+    template_name = "timers/personal_timerview.html"
+    slug_field = "short_code"
+
+    def get_context_data(self, **kwargs):
+        args = super().get_context_data(**kwargs)
+        assert isinstance(self.object, Session)
+        args["selected_table"] = self.kwargs["table"]
+        return args
 
 class MySessionsView(ListView):
     model = Session

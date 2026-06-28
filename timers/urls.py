@@ -23,6 +23,9 @@ from timers.views import (
     UpdateTableRangeView,
     DeleteTableRangeView,
     MySessionsView,
+    SelectPersonalSessionView,
+    SelectPersonalSessionTableView,
+    PersonalView,
 )
 
 app_name = "timers"
@@ -71,9 +74,9 @@ urlpatterns = [
     path("join/", JoinAdminView.as_view(), name="join_control"),
     path("time/<slug:slug>/", UpdateSessionTimeView.as_view(), name="edit_time"),
     path("view/", SelectSessionView.as_view(), name="view_session_select"),
-    path("personal/", SelectSessionView.as_view(), name="view_table_select"),
-    path("personal/<slug:slug>/", SelectSessionView.as_view(), name="view_table_table"),
-    path("personal/<slug:slug>/<int:table>/", TimerView.as_view(), name="view_table"),
+    path("personal/", SelectPersonalSessionView.as_view(), name="view_table_select"),
+    path("personal/<slug:slug>/", SelectPersonalSessionTableView.as_view(), name="view_table_table"),
+    path("personal/<slug:slug>/<int:table>/", PersonalView.as_view(), name="view_table"),
     path("view/<slug:slug>/", TimerView.as_view(), name="view_session"),
     # API endpoints
     path("api/session_state/<slug:slug>", SessionStateJson.as_view()),

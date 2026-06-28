@@ -5,13 +5,13 @@
 {% block main %}
   <div class="card h-100">
     <div class="card-header d-flex flex-row align-items-center justify-content-between">
-      <h1>Create Timer</h1>
+      <h1>Select Table</h1>
     </div>
     <div class="card-body">
       <form method="POST">
         {% csrf_token %}
         {{ form | crispy }}
-        <input type="submit" class="btn btn-primary btn-wide" value="Join" />
+        <input type="submit" class="btn btn-primary btn-wide" value="Select" />
       </form>
     </div>
   </div>

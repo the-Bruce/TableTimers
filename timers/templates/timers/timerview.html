@@ -18,7 +18,7 @@
     <div class="card-body d-flex flex-column align-items-center">
       {% include "timers/snippet/timer.html" with session=session table=session.timer large=1 %}
       <div class="timer-row d-flex flex-row gap-3 flex-wrap justify-content-center" id="tableTimers">
-{#        <div class="card qrcode"><h2 class="card-header">Open Personal</h2><div class="card-img-bottom d-flex flex-column align-items-center">{% qrl "timers:view_table_table" session.short_code %}</div></div>#}
+        <div class="card qrcode"><h2 class="card-header">Open Personal</h2><div class="card-img-bottom d-flex flex-column align-items-center">{% qrl "timers:view_table_table" session.short_code %}</div></div>
       
         {% for table in session.tableoffset_set.all %}
           {% if table.table|stringformat:"i" in selected_tables %}
@@ -129,7 +129,7 @@
 
 {% block js %}
   <script>
-  document.tabletimers = {control: false};
+  document.tabletimers = {control: false, personal: false};
   </script>
   <script src="{% static "timers/runtimers.js" %}"></script>
   <script>
