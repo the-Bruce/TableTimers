@@ -261,8 +261,8 @@ class CreateSessionView(CreateView):
     def form_valid(self, form):
         resp = super().form_valid(form)
         Timer.objects.create(
-            duration=datetime.timedelta(minutes=30),
-            remaining_duration=datetime.timedelta(minutes=30),
+            duration=datetime.timedelta(minutes=40),
+            remaining_duration=datetime.timedelta(minutes=40),
             start_time=timezone.now(),
             session=self.object,
         )
