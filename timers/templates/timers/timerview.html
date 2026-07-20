@@ -138,6 +138,9 @@
               updateTimers()
               setInterval(quickUpdateTimers, 100)
               setInterval(async () => await fetchTimerUpdates("{{ session.short_code }}"), 1000)
+              if (!document.tabletimers.control) {
+                  requestWakeLock()
+              }
           }
       )
   </script>
