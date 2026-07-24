@@ -1,9 +1,10 @@
-{% spaceless %}
-<div class="input-group">
-  {% for widget in widget.subwidgets %}
+{% spaceless %}<div class="d-flex flex-sm-row flex-column">
+{% for widget in widget.subwidgets %}
+<div class="input-group{% if not forloop.last %} mb-2 mb-sm-0 me-sm-2 me-0{% endif %}">
     <span class="input-group-text">{{ widget.widget_label }}</span>
     <input type="{{ widget.type }}" class="form-control" name="{{ widget.name }}"{% if widget.value != None %}
        value="{{ widget.value|stringformat:'s' }}"{% endif %} />
-  {% endfor %}
 </div>
+  {% endfor %}
+  </div>
 {% endspaceless %}
