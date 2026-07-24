@@ -76,8 +76,9 @@
 
       </div>
     </div>
-    <h3 class="card-footer mb-0">
-      Session ID: <span class="font-monospace">{{ session.short_code }}</span>
+    <h3 class="card-footer mb-0 d-flex align-items-center justify-content-between m-0 align-middle">
+      <span>Session ID: <span class="font-monospace">{{ session.short_code }}</span></span>
+      <a href="{% url 'timers:view_session' session.short_code %}" target="_blank" class="btn btn-outline-dark"><i class="fas fa-external-link-alt"></i></a>
     </h3>
   </div>
 {% endblock %}

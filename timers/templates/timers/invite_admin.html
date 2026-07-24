@@ -20,3 +20,14 @@
     </div>
   </div>
 {% endblock %}
+
+{% block js %}
+  <script>
+      window.addEventListener(
+          "load",
+          (_event) => {
+              requestWakeLock()
+          }
+      )
+  </script>
+{% endblock %}
