@@ -153,7 +153,7 @@ class TableRangeForm(forms.ModelForm):
         start = self.cleaned_data["start"]
         end = self.cleaned_data["end"]
 
-        if end <= start:
+        if end < start:
             raise ValidationError("End must be bigger than start")
         return end
 
@@ -161,7 +161,9 @@ class TableRangeForm(forms.ModelForm):
         validated_values = super().clean()
 
         start = validated_values["start"]
-        end = validated_values["end"]
+        end = validated_values.get("end")
+        if end is None:
+            return
 
         table_ranges_qs = self.session.tableranges_set.all()
         if self.instance is not None:
